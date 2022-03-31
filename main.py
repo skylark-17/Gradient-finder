@@ -3,19 +3,20 @@ import numpy as np
 
 import lib
 
-# img = np.array(Image.open(img_name)).astype('int32')
-# img = cv.imread(img_name)
-
 
 def main(img_name, output_dir):
     img = np.array(Image.open(img_name))
-    sobel_sum = lib.calculate_sobel_sum(img_name)
+    # Считаем среднее квадратичное значений оператора Собеля на 3-х цветах
+    sobel_sum_mask = lib.calculate_sobel_sum(img_name)
 
-    inter = lib.apply_filter_on_image(img, sobel_sum)
+    # Применяем фильтр к промежуточному значению
+    inter = lib.apply_filter_on_image(img, sobel_sum_mask)
     Image.fromarray(inter).save(f'{output_dir}/inter.jpg')
 
-    mask_of_squares = lib.get_mask_of_squares(sobel_sum)
+    # Находим "хорошие" квадраты
+    mask_of_squares = lib.get_mask_of_squares(sobel_sum_mask)
 
+    # Применяем фильтр к финальному значению
     final = lib.apply_filter_on_image(img, mask_of_squares)
     Image.fromarray(final).save(f'{output_dir}/final.jpg')
 
